@@ -10,6 +10,7 @@ package io.lighty.core.controller.impl.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
@@ -42,10 +43,9 @@ public final class ControllerConfigUtils {
      */
     public static final Set<YangModuleInfo> YANG_MODELS = ImmutableSet.of(
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.iana.afn.safi.rev130704.$YangModuleInfoImpl.getInstance(),
-            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.iana._if.type.rev140508.$YangModuleInfoImpl.getInstance(),
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.iana._if.type.rev170119.$YangModuleInfoImpl.getInstance(),
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.$YangModuleInfoImpl.getInstance(),
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.$YangModuleInfoImpl.getInstance(),
-            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.restconf.rev131019.$YangModuleInfoImpl.getInstance(),
             org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.$YangModuleInfoImpl.getInstance(),
             org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.$YangModuleInfoImpl.getInstance(),
             org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.$YangModuleInfoImpl.getInstance(),
@@ -80,6 +80,7 @@ public final class ControllerConfigUtils {
      */
     public static ControllerConfiguration getConfiguration(final InputStream jsonConfigInputStream)
             throws ConfigurationException {
+        Preconditions.checkNotNull(jsonConfigInputStream);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode configNode;
 
@@ -88,6 +89,10 @@ public final class ControllerConfigUtils {
             configNode = mapper.readTree(jsonConfigInputStream);
         } catch (IOException e) {
             throw new ConfigurationException("Cannot deserialize Json content to Json tree nodes", e);
+        }
+
+        if (configNode == null) {
+            throw new ConfigurationException("Configuration was not loaded, empty or missing configuration.");
         }
 
         StringBuilder jsonPath = new StringBuilder().append(CONTROLLER_CONFIG_ROOT_ELEMENT_NAME);

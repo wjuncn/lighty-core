@@ -7,6 +7,7 @@
  */
 package io.lighty.core.controller.api;
 
+import io.lighty.core.controller.impl.services.LightySystemReadyService;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.Timer;
 import io.netty.util.concurrent.EventExecutor;
@@ -18,13 +19,17 @@ import org.opendaylight.controller.config.threadpool.ThreadPool;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.MountPointService;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.binding.dom.adapter.BindingToNormalizedNodeCodec;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingCodecTreeFactory;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
+import org.opendaylight.mdsal.dom.api.DOMActionProviderService;
+import org.opendaylight.mdsal.dom.api.DOMActionService;
 import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingService;
@@ -51,6 +56,10 @@ import org.opendaylight.yangtools.yang.model.api.SchemaContextProvider;
 public interface LightyServices extends LightyModuleRegistryService {
 
     DiagStatusService getDiagStatusService();
+
+    SystemReadyMonitor getSystemReadyMonitor();
+
+    LightySystemReadyService getLightySystemReadyService();
 
     ActorSystemProvider getActorSystemProvider();
 
@@ -104,11 +113,13 @@ public interface LightyServices extends LightyModuleRegistryService {
 
     DOMDataBroker getClusteredDOMDataBroker();
 
-    DOMDataBroker getPingPongDataBroker();
-
     DOMRpcService getDOMRpcService();
 
     DOMRpcProviderService getDOMRpcProviderService();
+
+    DOMActionService getDOMActionService();
+
+    DOMActionProviderService getDOMActionProviderSerice();
 
     RpcProviderService getRpcProviderService();
 
@@ -120,7 +131,8 @@ public interface LightyServices extends LightyModuleRegistryService {
 
     DataBroker getBindingDataBroker();
 
-    DataBroker getBindingPingPongDataBroker();
+    @Deprecated
+    BindingToNormalizedNodeCodec getNormalizedNodeCodec();
 
     @Deprecated
     NotificationProviderService getControllerNotificationProviderService();

@@ -16,7 +16,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +86,7 @@ public abstract class AbstractLightyModule implements LightyModule {
      * Implementation of this method should initialize everything necessary.
      * @return success of initialization
      */
-    protected abstract boolean initProcedure();
+    protected abstract boolean initProcedure() throws InterruptedException;
 
     /**
      * This method is called in {@link AbstractLightyModule#shutdown()} method.
@@ -95,7 +94,7 @@ public abstract class AbstractLightyModule implements LightyModule {
      * shutdown correctly (e.g. stop initialized beans, release resources, ...).
      * @return success of stop.
      */
-    protected abstract boolean stopProcedure();
+    protected abstract boolean stopProcedure() throws InterruptedException;
 
     @Override
     public synchronized ListenableFuture<Boolean> start() {
@@ -140,7 +139,7 @@ public abstract class AbstractLightyModule implements LightyModule {
     public void startBlocking(Consumer<Boolean> initFinishCallback) throws InterruptedException {
         Futures.addCallback(start(), new FutureCallback<Boolean>() {
             @Override
-            public void onSuccess(@Nullable Boolean result) {
+            public void onSuccess(Boolean result) {
                 initFinishCallback.accept(true);
             }
 
